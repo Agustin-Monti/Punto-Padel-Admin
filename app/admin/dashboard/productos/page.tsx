@@ -204,7 +204,20 @@ export default function Productos() {
   const handleSave = async () => {
     try {
       const updatedData = await fetchProductos();
+      
+      // Actualizamos el estado base
       setProductos(updatedData);
+      
+      // Si hay una búsqueda activa, volvemos a filtrar los datos actualizados
+      if (busqueda.trim() !== '') {
+        const filtrados = updatedData.filter((p: Producto) =>
+          p.nombre.toLowerCase().includes(busqueda.toLowerCase())
+        );
+        setProductosFiltrados(filtrados);
+      } else {
+        // Si no hay búsqueda, mostramos todos
+        setProductosFiltrados(updatedData);
+      }
 
       Swal.fire({
         icon: 'success',
