@@ -11,6 +11,43 @@ interface User {
   admin: boolean;
 }
 
+interface NavItemProps {
+  href: string;
+  icon: string;
+  label: string;
+  disabled?: boolean;
+}
+
+function NavItem({ href, icon, label, disabled = false }: NavItemProps) {
+  if (disabled) {
+    return (
+      <li>
+        <div className="flex items-center justify-between rounded p-2 text-gray-500 opacity-60 cursor-not-allowed">
+          <span className="flex items-center space-x-2">
+            <span>{icon}</span>
+            <span>{label}</span>
+          </span>
+          <span className="rounded-full bg-gray-700 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide">
+            Pronto
+          </span>
+        </div>
+      </li>
+    );
+  }
+
+  return (
+    <li>
+      <Link
+        href={href}
+        className="flex items-center space-x-2 rounded p-2 transition-colors hover:bg-gray-700"
+      >
+        <span>{icon}</span>
+        <span>{label}</span>
+      </Link>
+    </li>
+  );
+}
+
 export default function Sidebar() {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
@@ -21,7 +58,6 @@ export default function Sidebar() {
       try {
         const { data: { user: authUser } } = await supabase.auth.getUser();
         if (authUser) {
-          // Obtener el perfil del usuario actual
           const { data: profile } = await supabase
             .from('profiles')
             .select('id, superadmin, admin')
@@ -61,63 +97,22 @@ export default function Sidebar() {
       {/* Enlaces */}
       <nav className="flex-1 p-4">
         <ul className="space-y-4">
-          <li>
-            <Link href="/admin/dashboard" className="flex items-center space-x-2 hover:bg-gray-700 p-2 rounded">
-              <span>🏠</span>
-              <span>Inicio</span>
-            </Link>
-          </li>
-          <li>
-            <Link href="/admin/dashboard/productos" className="flex items-center space-x-2 hover:bg-gray-700 p-2 rounded">
-              <span>📦</span>
-              <span>Productos</span>
-            </Link>
-          </li>
-          <li>
-            <Link href="/admin/dashboard/categorias" className="flex items-center space-x-2 hover:bg-gray-700 p-2 rounded">
-              <span>📂</span>
-              <span>Categorías</span>
-            </Link>
-          </li>
-          <li>
-            <Link href="/admin/dashboard/marcas" className="flex items-center space-x-2 hover:bg-gray-700 p-2 rounded">
-              <span>🏷️</span>
-              <span>Marcas</span>
-            </Link>
-          </li>
-          <li>
-            <Link href="/admin/dashboard/tipos" className="flex items-center space-x-2 hover:bg-gray-700 p-2 rounded">
-              <span>💼</span>
-              <span>Tipos Productos</span>
-            </Link>
-          </li>
-          <li>
-            <Link href="/admin/dashboard/pedidos" className="flex items-center space-x-2 hover:bg-gray-700 p-2 rounded">
-              <span>🛒</span>
-              <span>Pedidos</span>
-            </Link>
-          </li>
-          <li>
-            <Link href="/admin/dashboard/metodos" className="flex items-center space-x-2 hover:bg-gray-700 p-2 rounded">
-              <span>📬</span>
-              <span>Metodos de Envios</span>
-            </Link>
-          </li>
-          <li>
-            <Link href="/admin/dashboard/usuarios" className="flex items-center space-x-2 hover:bg-gray-700 p-2 rounded">
-              <span>👥</span>
-              <span>Usuarios</span>
-            </Link>
-          </li>
-          
+          <NavItem href="/admin/dashboard" icon="🏠" label="Inicio" />
+          <NavItem href="/admin/dashboard/productos" icon="📦" label="Productos" />
+          <NavItem href="/admin/dashboard/categorias" icon="📂" label="Categorías" />
+          <NavItem href="/admin/dashboard/marcas" icon="🏷️" label="Marcas" />
+
+          {/* Desactivados */}
+          <NavItem href="/admin/dashboard/tipos" icon="💼" label="Tipos Productos" disabled />
+          <NavItem href="/admin/dashboard/pedidos" icon="🛒" label="Pedidos" disabled />
+          <NavItem href="/admin/dashboard/metodos" icon="📬" label="Métodos de Envíos" disabled />
+
+          {/* Activos */}
+          <NavItem href="/admin/dashboard/usuarios" icon="👥" label="Usuarios" />
+
           {/* Solo mostrar "Admins" a superadmins */}
           {currentUser?.superadmin && (
-            <li>
-              <Link href="/admin/dashboard/admins" className="flex items-center space-x-2 hover:bg-gray-700 p-2 rounded">
-                <span>👤</span>
-                <span>Admins</span>
-              </Link>
-            </li>
+            <NavItem href="/admin/dashboard/admins" icon="👤" label="Admins" />
           )}
         </ul>
       </nav>
